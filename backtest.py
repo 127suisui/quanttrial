@@ -11,7 +11,7 @@ ORDER     = 5_000
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--bootstrap", default="localhost:9092")
+    p.add_argument("--bootstrap", default="host.docker.internal:9092")
     p.add_argument("--topic",     default="mock_l1_stream")
     p.add_argument("--timeout_ms", type=int, default=30_000)
     return p.parse_args()

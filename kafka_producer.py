@@ -19,7 +19,7 @@ from kafka import KafkaProducer
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--csv", required=True, help="Path to l1_day.csv")
-    p.add_argument("--bootstrap", default="localhost:9092",
+    p.add_argument("--bootstrap", default="172.31.24.187:9092",
                    help="Kafka bootstrap servers")
     p.add_argument("--topic", default="mock_l1_stream",
                    help="Kafka topic name")
