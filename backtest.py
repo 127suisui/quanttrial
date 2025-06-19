@@ -2,7 +2,44 @@
 import argparse, json, itertools, sys
 from collections import defaultdict
 from kafka import KafkaConsumer
-from allocator import allocate
+
+# Inlined from allocator.py
+def compute_cost(split, venues, order_size, λo, λu, θ) -> float:
+    executed = cash_spent = 0.0
+    for alloc, v in zip(split, venues):
+        exe = min(alloc, v["ask_sz"])
+        executed += exe
+        cash_spent += exe * (v["ask_px"] + v["fee"])
+        maker_rebate = max(alloc - exe, 0) * v["rebate"]
+        cash_spent -= maker_rebate
+    underfill = max(order_size - executed, 0)
+    overfill = max(executed - order_size, 0)
+    return (
+        cash_spent
+        + θ * (underfill + overfill)
+        + λu * underfill
+        + λo * overfill
+    )
+
+def allocate(order_size, venues, λ_over, λ_under, θ_queue, step=100):
+    splits = [[]]
+    for v in venues:
+        new_splits = []
+        for alloc in splits:
+            used = sum(alloc)
+            max_v = min(order_size - used, v["ask_sz"])
+            for q in range(0, max_v + 1, step):
+                new_splits.append(alloc + [q])
+        splits = new_splits
+
+    best_cost, best_split = float("inf"), []
+    for alloc in splits:
+        if sum(alloc) != order_size:
+            continue
+        cost = compute_cost(alloc, venues, order_size, λ_over, λ_under, θ_queue)
+        if cost < best_cost:
+            best_cost, best_split = cost, alloc
+    return best_split, best_cost
 
 LAM_OVER  = [0.2, 0.4, 0.6]
 LAM_UNDER = [0.2, 0.4, 0.6]
@@ -12,7 +49,7 @@ ORDER     = 5_000
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--bootstrap", default="host.docker.internal:9092")
-    p.add_argument("--topic",     default="mock_l1_stream")
+    p.add_argument("--topic", default="mock_l1_stream")
     p.add_argument("--timeout_ms", type=int, default=30_000)
     return p.parse_args()
 
@@ -45,12 +82,12 @@ def run_execution(by_ts, split_fn):
         for qty, v in zip(split_fn(remain, vs), vs):
             exe = min(qty, v["ask_sz"])
             remain -= exe
-            cash   += exe * v["ask_px"]
+            cash += exe * v["ask_px"]
     return {"total_cash": cash, "avg_fill_px": cash / ORDER}
 
 def main():
-    a   = parse_args()
-    s   = load_snapshots(a.topic, a.bootstrap, a.timeout_ms)
+    a = parse_args()
+    s = load_snapshots(a.topic, a.bootstrap, a.timeout_ms)
 
     baselines = {
         "best_ask": run_execution(
