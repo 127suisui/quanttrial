@@ -1,0 +1,30 @@
+{
+  "best_parameters": {
+    "lambda_over": 0.2,
+    "lambda_under": 0.2,
+    "theta_queue": 0.1
+  },
+  "optimized": {
+    "total_cash": 1113700.0,
+    "avg_fill_px": 222.74
+  },
+  "baselines": {
+    "best_ask": {
+      "total_cash": 1114102.2800000003,
+      "avg_fill_px": 222.82045600000006
+    },
+    "twap": {
+      "total_cash": 1114103.36,
+      "avg_fill_px": 222.82067200000003
+    },
+    "vwap": {
+      "total_cash": 1114103.36,
+      "avg_fill_px": 222.82067200000003
+    }
+  },
+  "savings_vs_baselines_bps": {
+    "best_ask": 3.6,
+    "twap": 3.6,
+    "vwap": 3.6
+  }
+}
