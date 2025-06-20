@@ -1,6 +1,5 @@
 loom:
-https://www.loom.com/share/f7b754fa7a504edb895f8a1f903d031b
-
+https://www.loom.com/share/ed927e21184247079b8ea16ed887a9fd
 # Blockhouse Quant Developer Trial
 
 ## Day 1 – Kafka Producer
