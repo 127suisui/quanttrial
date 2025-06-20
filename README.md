@@ -2,19 +2,19 @@ loom:
 https://www.loom.com/share/ed927e21184247079b8ea16ed887a9fd
 # Blockhouse Quant Developer Trial
 
-## Day 1 – Kafka Producer
+## first step – Kafka Producer
 * `kafka_producer.py` streams **l1_day.csv** (59 752 rows) ⇒ topic `mock_l1_stream`.
 * Speed factor adjustable via `--speed`.
 
-## Day 2 – Backtest & Allocator
+## second step – Backtest & Allocator
 * `allocator.py` implements static Cont–Kukanov split.
 * `backtest.py`:
   * Consumes Kafka stream.
   * Grid-searches λ_over / λ_under / θ_queue.
   * Benchmarks vs BestAsk, TWAP, VWAP.
-  * Outputs required JSON (see `output.json`).
+  * Outputs required JSON (`output.json`).
 
-## Day 3 – Reproducible Environment
+## third step – Reproducible Environment
 
 
 cd kafka-docker
